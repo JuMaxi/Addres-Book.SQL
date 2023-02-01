@@ -39,70 +39,6 @@ namespace AddressBook
             Console.ReadKey();
             Console.Clear();
         }
-        public int CalculateID(ManagementContacts Access)
-        {
-            int LastID = 0;
-
-            if (Access.AddContacts.Count == 0)
-            {
-                LastID = (Access.AddContacts.Count) + 1;
-            }
-            else
-            {
-                LastID = (Access.AddContacts[Access.AddContacts.Count - 1].ID) + 1;
-            }
-
-            return LastID;
-        }
-
-        public void ReadFile(ManagementContacts AccessMC)
-        {
-            string Path = @"C:\Dev\AddressBook\AddressBook\database.csv";
-
-            if (File.Exists(Path))
-            {
-                string[] ReadTxt = File.ReadAllLines(Path);
-
-                foreach (string Line in ReadTxt)
-                {
-                    string[] BreakTxt = Line.Split(";");
-                    int NumberID = Convert.ToInt32(BreakTxt[0]);
-                    List<Phones> OptionsPhone = new List<Phones>();
-
-                    for (int Position = 4; Position < BreakTxt.Length - 1; Position = Position + 2)
-                    {
-                        Phones NewPhone = new Phones(BreakTxt[Position], BreakTxt[Position + 1]);
-                        OptionsPhone.Add(NewPhone);
-                    }
-
-                    Contacts AccessContacts = new Contacts(NumberID, BreakTxt[1], BreakTxt[2], BreakTxt[3], OptionsPhone);
-
-                    AccessMC.AddNewContact(AccessContacts);
-                }
-            }
-        }
-
-        public void WriteFile(List<Contacts> WriteContact)
-        {
-            string Path = @"C:\Dev\AddressBook\AddressBook\database.csv";
-            List<string> WriteFile = new List<string>();
-
-            foreach (Contacts Line in WriteContact)
-            {
-                string LineActual = (Line.ID + ";" + Line.Name + ";" + Line.Address + ";" + Line.Email.EmailAddress);
-                string LinePhones = "";
-                string LineActualPhones = "";
-
-                for (int Position = 0; Position < Line.Phones.Count; Position++)
-                {
-                    LineActualPhones = (";" + (Line.Phones[Position].Type) + ";" + (Line.Phones[Position].Number));
-                    LinePhones = LinePhones + LineActualPhones;
-
-                }
-                WriteFile.Add(LineActual + LinePhones);
-            }
-            File.WriteAllLines(Path, WriteFile);
-        }
 
         public List<string> ReturnUpdates(List<string> Updates)
         {
@@ -186,17 +122,13 @@ namespace AddressBook
             return Updates;
         }
 
-        bool ExitContacts = false;
-        string Choose = "0";
 
         public void OptionsContacts(ManagementContacts AccessMC)
         {
-            ReadFile(AccessMC);
-
+            string Choose = "0";
             List<Phones> OptionsPhone = new List<Phones>();
 
-
-            while (ExitContacts == false)
+            while (Choose != "5")
             {
                 WriteText();
 
@@ -222,11 +154,9 @@ namespace AddressBook
 
                     OptionsPhone = PhoneMenu.ReadOptionsPhone();
 
-                    int NumberID = CalculateID(AccessMC);
-
                     try
                     {
-                        Contacts AccessContacts = new Contacts(NumberID, Name, Address, Email, OptionsPhone);
+                        Contacts AccessContacts = new Contacts(Name, Address, Email, OptionsPhone);
                         AccessMC.AddNewContact(AccessContacts);
 
                     }
@@ -262,11 +192,6 @@ namespace AddressBook
 
                     AccessMC.UpdateContacts(IDInt, Updates[1], Updates[2], Updates[3]);
                     ExitMessage();
-                }
-                if (Choose == "5")
-                {
-                    WriteFile(AccessMC.AddContacts);
-                    ExitContacts = true;
                 }
             }
         }

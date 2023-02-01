@@ -12,13 +12,12 @@ namespace AddressBook
         public string Address;
         public Email Email;
         public List<Phones> Phones;
-        public int ID;
+        
 
-        public Contacts(int NumberID, string NamePerson, string AddressPerson, string EmailPerson, List<Phones> New)
+        public Contacts(string NamePerson, string AddressPerson, string EmailPerson, List<Phones> New)
         {
             Email EmailValidate = new Email(EmailPerson);
             
-            ID = NumberID;
             Name = NamePerson;
             Address = AddressPerson;
             Email = EmailValidate;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -50,6 +51,35 @@ namespace AddressBook
                 }
             }
             return AddPhones;
+        }
+        public void AddPhonesDB(List<Phones> ListPhones)
+        {
+            string ConnectionString = "Server=LAPTOP-P4GEIO8K\\SQLEXPRESS;Database=AddressBook;User Id=sa;Password=S4root;";
+
+            using(SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                string selectlastId = "select MAX(Id) as Last from Contact";
+                SqlCommand command = new SqlCommand(selectlastId, connection);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+                int LastID = 0;
+                while (reader.Read())
+                {
+                    LastID = Convert.ToInt32(reader["Last"]);
+                }
+                reader.Close();
+
+                for (int Position = 0; Position < ListPhones.Count; Position++)
+                {
+                    string insertPhone = "insert into Phones (ContactId, Kind, Phone) values(" + LastID + ",'" + ListPhones[Position].Type + "','" + ListPhones[Position].Number + "')";
+                    
+                    SqlCommand commandinsert = new SqlCommand(insertPhone, connection);
+                    commandinsert.ExecuteNonQuery();
+                }
+                
+            }
         }
     }
 }

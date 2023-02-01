@@ -12,13 +12,22 @@ namespace AddressBook
 {
     public class ManagementContacts
     {
-        public List<Contacts> AddContacts = new List<Contacts>();
+        string ConnectionString = "Server=LAPTOP-P4GEIO8K\\SQLEXPRESS;Database=AddressBook;User Id=sa;Password=S4root;";
+
         public void AddNewContact(Contacts NewContact)
         {
-            AddContacts.Add(NewContact);
-        }
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                string insert = "insert into Contact (Name, Address, Email) values('" + NewContact.Name + "','" + NewContact.Address + "','" + NewContact.Email.EmailAddress + "')";
+                SqlCommand command = new SqlCommand(insert, connection);
 
-        string ConnectionString = "Server=LAPTOP-P4GEIO8K\\SQLEXPRESS;Database=AddressBook;User Id=sa;Password=S4root;";
+                connection.Open();
+                command.ExecuteNonQuery();
+
+                PhoneMenu PhoneMenu = new PhoneMenu();
+                PhoneMenu.AddPhonesDB(NewContact.Phones);
+            }
+        }
         public void ShowContacts()
         {
             Menu Access = new Menu();
@@ -41,7 +50,7 @@ namespace AddressBook
                 {
                     int IDReader = Convert.ToInt32(reader["Id"]);
 
-                    if(IDActual != IDReader)
+                    if (IDActual != IDReader)
                     {
                         Console.WriteLine(" ");
                         Console.WriteLine("ID Number: " + reader["Id"]);
@@ -65,10 +74,14 @@ namespace AddressBook
                             }
                             else
                             {
-                                KindPhone = "Business Phone";
+                                if (reader["Kind"].ToString() == "3")
+                                {
+                                    KindPhone = "Business Phone";
+                                }
+
                             }
                         }
-                        Console.WriteLine( KindPhone + ": " + reader["Phone"]);
+                        Console.WriteLine(KindPhone + ": " + reader["Phone"]);
                     }
                 }
             }
@@ -93,7 +106,7 @@ namespace AddressBook
 
         public void UpdateContacts(int NumberID, string Table, string Change, string New)
         {
-            using(SqlConnection connection = new SqlConnection(ConnectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 string Update = "update " + Table + " set " + Change + "=" + "'" + New + "'" + "where Id=" + NumberID;
 
